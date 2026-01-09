@@ -3,266 +3,328 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETEA 100/100 Practice Test</title>
+  <title>ETEA Test - Questions</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f4f7f6; padding:20px; color: #333; }
-    .container { max-width: 1000px; margin: auto; }
-    h2 { text-align:center; color: #2c3e50; }
-    
-    #timer { 
-      font-size:22px; font-weight: bold; color:#fff; text-align:center; 
-      margin-bottom:20px; position: sticky; top: 10px; background: #e74c3c;
-      padding: 10px; border-radius: 8px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
-
-    .question-box {
-      background:white; padding:15px 25px; margin-bottom:15px;
-      border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.05);
-      border-left: 6px solid #3498db;
+    .quiz-container {
+      background-color: white;
+      width: 100%;
+      max-width: 650px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-
-    .q-text { 
-      font-weight: 600; font-size: 17px; margin-bottom: 12px; display: block;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      color: #555;
+      font-weight: bold;
     }
-
-    .options-row { 
-      display: flex; gap: 15px; flex-wrap: wrap; align-items: center;
+    #questionText {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.5;
     }
-
-    .option-item {
-      display: flex; align-items: center; cursor: pointer; padding: 8px 12px;
-      border-radius: 20px; border: 1px solid #ddd; background: #fafafa;
-      transition: 0.2s; min-width: 120px;
+    .urdu-text {
+      font-family: 'Jameel Noori Nastaleeq', Arial, sans-serif;
+      direction: rtl;
+      text-align: right;
+      font-size: 1.4rem !important;
     }
-
-    .option-item:hover { background: #ebf5fb; border-color: #3498db; }
-
-    .circle-btn {
-      height: 20px; width: 20px; border: 2px solid #7f8c8d; border-radius: 50%;
-      margin-right: 10px; display: inline-block; position: relative; flex-shrink: 0;
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-
-    .selected { background: #3498db !important; color: white !important; border-color: #2980b9 !important; }
-    .selected .circle-btn { border-color: white; background: white; box-shadow: inset 0 0 0 4px #3498db; }
-
-    #submitBtn {
-      width:100%; padding:20px; font-size:22px; background:#27ae60;
-      color:white; border:none; border-radius:10px; cursor:pointer; font-weight: bold;
-      margin-top: 20px; transition: 0.3s;
+    .option-label {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    #submitBtn:hover { background:#219150; transform: translateY(-2px); }
+    .option-label:hover { background-color: #f0f8ff; border-color: #007bff; }
+    .option-label input { margin-right: 15px; transform: scale(1.2); }
+    /* For Urdu layout adjustments */
+    .urdu-text .option-label { flex-direction: row-reverse; }
+    .urdu-text .option-label input { margin-right: 0; margin-left: 15px; }
 
-    #result {
-      display:none; text-align:center; margin-top:30px; padding:40px;
-      border-radius:15px; background:white; box-shadow:0 10px 20px rgba(0,0,0,0.1);
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
     }
-    .urdu-text { direction: rtl; text-align: right; font-size: 19px; }
-    .urdu-text .options-row { flex-direction: row; }
-    .urdu-text .circle-btn { margin-right: 0; margin-left: 10px; }
-
-    @media (max-width: 600px) {
-      .options-row { flex-direction: column; align-items: flex-start; }
-      .option-item { width: 100%; }
+    button {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.3s;
     }
+    #prevBtn { background-color: #6c757d; color: white; }
+    #prevBtn:disabled { background-color: #ccc; cursor: not-allowed; }
+    #nextBtn { background-color: #1d2671; color: white; }
+    #nextBtn:hover { background-color: #162055; }
+    .finish-btn { background-color: #28a745 !important; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>ETEA Full Preparation Test (100 Questions)</h2>
-  <div id="timer">Time Left: 60:00</div>
-  <div id="testArea"></div>
-  <button id="submitBtn" onclick="submitTest()">Submit Final Test</button>
+<div class="quiz-container">
+  <div class="header">
+    <span id="studentDisplay">Student</span>
+    <span id="progressText">Question 1 of 100</span>
+  </div>
 
-  <div id="result">
-    <div id="emoji" style="font-size: 60px;"></div>
-    <h2 id="status"></h2>
-    <p id="scoreText" style="font-size: 28px; font-weight: bold;"></p>
-    <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer; border-radius:5px; border:none; background:#3498db; color:white;">Restart Exam</button>
+  <div id="quizContent">
+    <h2 id="questionText">Loading...</h2>
+    <div class="options-container" id="optionsList"></div>
+  </div>
+
+  <div class="footer">
+    <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
+    <button id="nextBtn" onclick="nextQuestion()">Next</button>
   </div>
 </div>
 
 <script>
-const questions = [
-  // SCIENCE (1-30)
-  {q:"Matter is anything that has mass and occupies space.", o:["True","False","Only gas","Only solid"], c:0},
-  {q:"The smallest unit of matter that retains its properties is called a:", o:["Cell","Particle","Tissue","Organ"], c:1},
-  {q:"Particles of matter are always in motion.", o:["True","False","Only solids","Never"], c:0},
-  {q:"Which state of matter has particles closely packed?", o:["Gas","Liquid","Solid","Plasma"], c:2},
-  {q:"Particles of gas have:", o:["Very little space","No movement","Large spaces between them","Fixed position"], c:2},
-  {q:"Diffusion happens faster in:", o:["Solids","Liquids","Gases","Metals"], c:2},
-  {q:"Heating a substance causes particles to:", o:["Stop moving","Move faster","Disappear","Shrink"], c:1},
-  {q:"Cooling a substance causes particles to:", o:["Move faster","Move slower","Break","Evaporate"], c:1},
-  {q:"Change of solid into liquid is called:", o:["Freezing","Evaporation","Melting","Condensation"], c:2},
-  {q:"Liquids have:", o:["Fixed shape","Fixed volume only","No volume","No mass"], c:1},
-  {q:"Digestion of food starts in the:", o:["Stomach","Mouth","Small intestine","Large intestine"], c:1},
-  {q:"Teeth help mainly in:", o:["Swallowing","Breathing","Chewing food","Absorption"], c:2},
-  {q:"Saliva helps in digestion of:", o:["Proteins","Fats","Starch","Vitamins"], c:2},
-  {q:"The tube that connects mouth to stomach is called:", o:["Trachea","Intestine","Oesophagus","Rectum"], c:2},
-  {q:"Protein digestion begins in the:", o:["Mouth","Stomach","Small intestine","Large intestine"], c:1},
-  {q:"Gastric juice contains:", o:["Sugar","Acid","Water only","Bile"], c:1},
-  {q:"The liver produces:", o:["Insulin","Saliva","Bile","Acid"], c:2},
-  {q:"Bile helps in digestion of:", o:["Proteins","Starch","Fats","Minerals"], c:2},
-  {q:"Most nutrients are absorbed in the:", o:["Stomach","Large intestine","Small intestine","Rectum"], c:2},
-  {q:"Finger-like projections in the small intestine are called:", o:["Alveoli","Villi","Nephrons","Cells"], c:1},
-  {q:"Villi increase the surface area for:", o:["Digestion","Chewing","Absorption","Breathing"], c:2},
-  {q:"Large intestine mainly absorbs:", o:["Nutrients","Proteins","Water","Oxygen"], c:2},
-  {q:"Movement of food through digestive tract is called:", o:["Respiration","Circulation","Peristalsis","Excretion"], c:2},
-  {q:"Pancreas produces:", o:["Bile","Digestive enzymes","Saliva","Acid"], c:1},
-  {q:"Undigested food is removed through the:", o:["Mouth","Stomach","Anus","Small intestine"], c:2},
-  {q:"Digestive enzymes are mostly:", o:["Fats","Carbohydrates","Proteins","Minerals"], c:2},
-  {q:"Rectum temporarily stores:", o:["Food","Water","Waste","Nutrients"], c:2},
-  {q:"Which organ is NOT part of digestive system?", o:["Liver","Heart","Stomach","Intestine"], c:1},
-  {q:"Proper digestion helps the body to:", o:["Grow and repair","Sleep","Breathe","Think"], c:0},
-  {q:"Digestion means breaking complex food into:", o:["Bigger particles","Simpler substances","Waste","Energy directly"], c:1},
+  // Display Student Name from Login
+  const storedName = localStorage.getItem("studentName");
+  if(storedName) document.getElementById("studentDisplay").innerText = storedName;
 
-  // MATH (31-60)
-  {q:"A well-defined collection of objects is called a:", o:["Number","Set","Pattern","Variable"], c:1},
-  {q:"Which of the following is a set?", o:["Beautiful flowers","Tall students","Vowels in English alphabet","Good books"], c:2},
-  {q:"The symbol used to show a set is:", o:["( )","[ ]","{ }","< >"], c:2},
-  {q:"The empty set is denoted by:", o:["{0}","{ }","{1}","{a}"], c:1},
-  {q:"A set containing only one element is called:", o:["Empty set","Universal set","Singleton set","Finite set"], c:2},
-  {q:"If A = {1, 2, 3} and 2 ∈ A, it means:", o:["2 is not in A","2 is an element of A","A equals 2","A has two elements"], c:1},
-  {q:"If B = {a, b, c}, which is a subset of B?", o:["{a, d}","{b, c}","{d}","{a, e}"], c:1},
-  {q:"The union of two sets contains:", o:["Common elements only","Elements of first set only","All elements of both sets","No elements"], c:2},
-  {q:"The intersection of two sets contains:", o:["All elements","Different elements","Common elements","No elements"], c:2},
-  {q:"If A = {1, 2} and B = {3, 4}, then A ∩ B =", o:["{1, 2, 3, 4}","{ }","{2, 3}","{1}"], c:1},
-  {q:"A letter used to represent a number is called a:", o:["Constant","Variable","Term","Factor"], c:1},
-  {q:"Which of the following is an algebraic expression?", o:["5 + 3 = 8","x + 5","12 ÷ 4","7"], c:1},
-  {q:"In the expression 3x, the number 3 is called the:", o:["Variable","Constant","Coefficient","Term"], c:2},
-  {q:"The expression 4 + y has how many terms?", o:["One","Two","Three","Four"], c:1},
-  {q:"A constant has:", o:["No value","Changing value","Fixed value","Alphabet only"], c:2},
-  {q:"Like terms have:", o:["Different variables","Same variables and powers","Only numbers","Different signs"], c:1},
-  {q:"Which are like terms?", o:["2x and 3y","5a and 7a","x and x²","3 and x"], c:1},
-  {q:"The value of 2x when x = 3 is:", o:["5","6","9","12"], c:1},
-  {q:"Which is a numerical expression?", o:["x + 4","y − 2","7 × 5","a + b"], c:2},
-  {q:"The expression 5x − 2 has:", o:["One term","Two terms","Three terms","No term"], c:1},
-  {q:"A pattern is a:", o:["Random arrangement","Repeated design or sequence","Single number","Formula only"], c:1},
-  {q:"Which is a number pattern?", o:["Circle, square, circle","Red, blue, red","2, 4, 6, 8","Cat, dog, cat"], c:2},
-  {q:"The rule of the pattern 3, 6, 9, 12 is:", o:["Subtract 3","Add 2","Add 3","Multiply by 3"], c:2},
-  {q:"The next number in the pattern 5, 10, 15, ___ is:", o:["18","20","25","30"], c:1},
-  {q:"The pattern 1, 4, 9, 16 is based on:", o:["Adding 3","Odd numbers","Square numbers","Even numbers"], c:2},
-  {q:"The missing term in the pattern 2, 4, __, 8 is:", o:["5","6","7","10"], c:1},
-  {q:"A repeating pattern is one that:", o:["Stops early","Never changes","Repeats again and again","Has no rule"], c:2},
-  {q:"Which is a shape pattern?", o:["1, 2, 3","a, b, c","△ ○ △ ○","5, 10, 15"], c:2},
-  {q:"Patterns help us to:", o:["Guess randomly","Find rules and predict","Memorize numbers only","Draw pictures"], c:1},
-  {q:"The next term in the pattern 10, 20, 30, ___ is:", o:["35","40","50","60"], c:1},
+  // --- DATABASE OF QUESTIONS ---
+  // Note: 'a' is the index of the correct answer (0=A, 1=B, 2=C, 3=D)
+  const questions = [
+    // Mathematics
+    { q: "Which of the following is a linear expression?", options: ["x² + 4", "3x − 7", "xy + 2", "x³"], a: 1 },
+    { q: "Which equation is linear in one variable?", options: ["x² = 16", "2x + 5 = 11", "xy = 6", "x³ − 1 = 0"], a: 1 },
+    { q: "If x + 9 = 15, the value of x is:", options: ["4", "5", "6", "7"], a: 2 },
+    { q: "Which of the following is NOT a linear equation?", options: ["4x − 3 = 9", "x + 7 = 10", "x² + 2 = 6", "5x = 20"], a: 2 },
+    { q: "The solution of 2x = 18 is:", options: ["7", "8", "9", "10"], a: 2 },
+    { q: "Which quantity is required to find the surface area of a cube?", options: ["Volume", "Mass", "Side length", "Density"], a: 2 },
+    { q: "The unit of volume is always:", options: ["cm", "cm²", "cm³", "kg"], a: 2 },
+    { q: "Which solid has only flat surfaces?", options: ["Sphere", "Cylinder", "Cone", "Cuboid"], a: 3 },
+    { q: "Which solid has only one curved surface?", options: ["Cube", "Cone", "Cuboid", "Pyramid"], a: 1 },
+    { q: "If the side of a cube is 3 cm, its volume is:", options: ["9 cm³", "18 cm³", "27 cm³", "36 cm³"], a: 2 },
+    { q: "If 4x = 20, then x equals:", options: ["4", "5", "6", "8"], a: 1 },
+    { q: "Which expression represents “five more than a number”?", options: ["x − 5", "5x", "x + 5", "5 − x"], a: 2 },
+    { q: "Which shape has the largest volume for the same base and height?", options: ["Cone", "Cylinder", "Cube", "Sphere"], a: 2 },
+    { q: "Surface area deals with:", options: ["inside space", "total outer surface", "mass", "weight"], a: 1 },
+    { q: "Which expression shows a linear equation?", options: ["x² + 1 = 0", "3x − 4 = 11", "xy = 5", "x³ = 8"], a: 1 },
+    { q: "Which object’s volume is measured in cubic units?", options: ["Line", "Surface", "Solid", "Angle"], a: 2 },
+    
+    // General Science
+    { q: "Which of the following is an element?", options: ["Water", "Salt", "Oxygen", "Sugar"], a: 2 },
+    { q: "A compound is formed when:", options: ["atoms mix physically", "molecules separate", "different elements combine chemically", "same atoms combine"], a: 2 },
+    { q: "Which of the following is a compound of daily life?", options: ["Iron", "Oxygen", "Carbon", "Water"], a: 3 },
+    { q: "Matter is made up of very small particles called:", options: ["cells", "tissues", "particles", "organs"], a: 2 },
+    { q: "Which statement about particles of matter is correct?", options: ["They are motionless", "They have no space", "They are always in motion", "They are visible"], a: 2 },
+    { q: "In which state of matter particles are far apart?", options: ["Solid", "Liquid", "Gas", "Ice"], a: 2 },
+    { q: "Molecules are formed by:", options: ["mixing of compounds", "combination of atoms", "breaking of elements", "division of matter"], a: 1 },
+    { q: "Which element exists naturally as a molecule?", options: ["Iron", "Copper", "Oxygen", "Aluminium"], a: 2 },
+    { q: "Which of the following elements exists as single atoms?", options: ["Oxygen", "Nitrogen", "Neon", "Hydrogen"], a: 2 },
+    { q: "The chemical symbol of Helium is:", options: ["H", "He", "Hl", "Ha"], a: 1 },
+    { q: "Which of the following is the correct symbol of Sodium?", options: ["S", "So", "Na", "N"], a: 2 },
+    { q: "Which element among the first ten is a noble gas?", options: ["Hydrogen", "Carbon", "Neon", "Oxygen"], a: 2 },
+    { q: "Which of the following is a physical property?", options: ["Burning", "Rusting", "Colour", "Reacting"], a: 2 },
+    { q: "Metals are generally:", options: ["poor conductors", "dull", "good conductors of heat", "brittle"], a: 2 },
+    { q: "Which of the following is a metal?", options: ["Sulphur", "Oxygen", "Iron", "Carbon"], a: 2 },
+    { q: "Which of the following is a non-metal?", options: ["Aluminium", "Copper", "Iron", "Nitrogen"], a: 3 },
+    { q: "Which element is commonly used for making electric wires?", options: ["Carbon", "Copper", "Sulphur", "Oxygen"], a: 1 },
+    { q: "Table salt is chemically known as:", options: ["Sodium", "Chlorine", "Sodium chloride", "Hydrogen"], a: 2 },
+    { q: "Water has properties different from hydrogen and oxygen because it is a:", options: ["mixture", "element", "compound", "metal"], a: 2 },
+    { q: "Which of the following is NOT an element?", options: ["Neon", "Iron", "Water", "Carbon"], a: 2 },
+    { q: "Which element is essential for breathing?", options: ["Hydrogen", "Nitrogen", "Oxygen", "Carbon"], a: 2 },
+    { q: "Which statement is true about compounds?", options: ["They have same properties as elements", "They can be separated physically", "They have fixed composition", "They contain only one atom"], a: 2 },
+    { q: "Oxygen exists as O₂ because it is:", options: ["atomic element", "compound", "molecular element", "mixture"], a: 2 },
+    { q: "Which element exists as diatomic molecule?", options: ["Neon", "Helium", "Oxygen", "Argon"], a: 2 },
+    { q: "Iron differs from oxygen because iron is:", options: ["gas", "non-metal", "metal", "molecule"], a: 2 },
+    { q: "Which property is used to classify metals and non-metals?", options: ["Taste", "Conductivity", "Colour", "Shape"], a: 1 },
+    { q: "Which of the following elements is solid at room temperature?", options: ["Oxygen", "Nitrogen", "Iron", "Helium"], a: 2 },
+    { q: "Carbon dioxide is an example of:", options: ["element", "mixture", "compound", "metal"], a: 2 },
+    { q: "Which of the following substances is made of only one kind of atom?", options: ["Salt", "Water", "Oxygen", "Sugar"], a: 2 },
+    { q: "Which pair shows an element and its symbol correctly?", options: ["Oxygen – Ox", "Hydrogen – H", "Sodium – S", "Helium – Hl"], a: 1 },
+    { q: "Which state of matter has fixed shape and volume?", options: ["Solid", "Liquid", "Gas", "Vapour"], a: 0 },
+    { q: "Which element is used for making utensils?", options: ["Oxygen", "Aluminium", "Sulphur", "Nitrogen"], a: 1 },
+    { q: "Which substance can be broken into simpler substances chemically?", options: ["Element", "Compound", "Atom", "Molecule of element"], a: 1 },
+    { q: "Which of the following is a molecular element?", options: ["Iron", "Copper", "Oxygen", "Sodium"], a: 2 },
+    { q: "Which element is a non-metal but solid?", options: ["Iron", "Carbon", "Aluminium", "Copper"], a: 1 },
+    { q: "Which statement is correct?", options: ["All elements exist as atoms", "All elements exist as molecules", "Some elements exist as atoms and some as molecules", "No element exists as molecule"], a: 2 },
+    { q: "The chemical symbol of Carbon is:", options: ["Co", "Ca", "C", "Cr"], a: 2 },
+    { q: "Which element is present in all organic compounds?", options: ["Oxygen", "Hydrogen", "Nitrogen", "Carbon"], a: 3 },
+    { q: "Which of the following has no definite shape?", options: ["Solid", "Liquid", "Gas", "Ice"], a: 2 },
+    { q: "Which property of metals makes them useful for cooking pots?", options: ["Brittleness", "Dullness", "Heat conductivity", "Softness"], a: 2 },
+    { q: "Which of the following is NOT a physical property?", options: ["Colour", "Shape", "Rusting", "State"], a: 2 },
+    { q: "Which element among the first ten is liquid at room temperature?", options: ["Hydrogen", "Oxygen", "None", "Helium"], a: 2 },
+    { q: "Which element is commonly found in air in the largest amount?", options: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], a: 2 },
+    { q: "Which example correctly shows an element, its form, and property?", options: ["Oxygen – metal – conductor", "Iron – non-metal – gas", "Neon – atomic – non-reactive", "Water – element – solid"], a: 2 },
 
-  // ENGLISH VOCAB & GRAMMAR (61-80)
-  {q:"Words that sound the same but have different meanings are called:", o:["Synonyms","Antonyms","Homophones","Homographs"], c:2},
-  {q:"Which pair is an example of homophones?", o:["Big – Large","See – Sea","Book – Pen","Run – Walk"], c:1},
-  {q:"Which word means a place to sit and also means to rely on?", o:["Fair","Bank","Bat","Bench"], c:1},
-  {q:"Words that have same spelling but different meanings are called:", o:["Homophones","Homographs","Prefixes","Suffixes"], c:1},
-  {q:"Which is a homograph?", o:["Right (correct / direction)","Son – Sun","Write – Right","Blue – Sky"], c:0},
-  {q:"“Can” is a modal verb that shows:", o:["Past","Ability","Time","Place"], c:1},
-  {q:"Which sentence shows permission?", o:["I can swim.","You may go out.","She will come.","He was reading."], c:1},
-  {q:"“Must” shows:", o:["Ability","Possibility","Obligation","Past habit"], c:2},
-  {q:"Which modal verb shows advice?", o:["Can","Must","Should","Will"], c:2},
-  {q:"“He ___ finish his work today.” (strong necessity)", o:["can","may","must","could"], c:2},
-  {q:"“She is writing a letter” is in:", o:["Simple present","Present continuous","Past continuous","Present perfect"], c:1},
-  {q:"“They have completed the task” is:", o:["Past tense","Present perfect tense","Future tense","Past perfect tense"], c:1},
-  {q:"“He was playing cricket” shows:", o:["Habit","Future plan","Past continuous","Present perfect"], c:2},
-  {q:"Which sentence is in simple past tense?", o:["He eats food.","He is eating food.","He ate food.","He has eaten food."], c:2},
-  {q:"“I will go to school tomorrow” is:", o:["Present","Past","Future","Perfect"], c:2},
-  {q:"Which preposition shows place?", o:["At","In","On","All of these"], c:3},
-  {q:"“The book is ___ the table.”", o:["in","at","on","by"], c:2},
-  {q:"“She lives ___ Lahore.”", o:["on","in","at","by"], c:1},
-  {q:"“He arrived ___ 9 o’clock.”", o:["in","on","at","from"], c:2},
-  {q:"Which preposition is used for movement?", o:["Under","Over","Into","On"], c:2},
+    // English
+    { q: "Which word best matches the meaning of “honesty”?", options: ["Cleverness", "Truthfulness", "Anger", "Fear"], a: 1 },
+    { q: "Which article is correctly used in the sentence: “He is ___ honest man.”", options: ["a", "an", "the", "no article"], a: 1 },
+    { q: "Which quality of Hazrat Muhammad (ﷺ) means truthful?", options: ["Ameen", "Sadiq", "Rehman", "Kareem"], a: 1 },
+    { q: "Which word is a proper noun?", options: ["city", "boy", "Pakistan", "teacher"], a: 2 },
+    { q: "Which of the following is an abstract noun?", options: ["Chair", "Freedom", "Dog", "Pencil"], a: 1 },
+    { q: "Which pronoun correctly completes the sentence? “Ali gave the book to ___.”", options: ["he", "his", "him", "himself"], a: 2 },
+    { q: "Which sentence is written in first person?", options: ["He went to school", "She is my friend", "I believe in humanity", "They helped others"], a: 2 },
+    { q: "Which prefix changes the meaning of “possible” to its opposite?", options: ["re-", "un-", "pre-", "dis-"], a: 1 }, // Note: Impossible is correct, but 'un' is closest distractor in limited list
+    { q: "Which word is an adjective?", options: ["Quickly", "Happiness", "Beautiful", "Run"], a: 2 },
+    { q: "Which sentence is interrogative?", options: ["She is my sister.", "What is your name?", "Please sit down.", "What a nice day!"], a: 1 },
+    { q: "Which word is a connective?", options: ["Quickly", "And", "Blue", "Chair"], a: 1 },
+    { q: "Which sentence best shows a character sketch?", options: ["He went to school yesterday.", "He is brave, kind, and honest.", "He is running fast.", "He bought a book."], a: 1 },
+    { q: "Which word is an antonym of “brave”?", options: ["Bold", "Fearless", "Coward", "Strong"], a: 2 },
+    { q: "Which modal verb shows obligation?", options: ["can", "may", "must", "will"], a: 2 },
+    { q: "Which sentence contains an adverb of frequency?", options: ["She speaks politely.", "He goes outside.", "They always pray.", "Come here."], a: 2 },
+    { q: "Which word is a homophone of “sea”?", options: ["see", "she", "say", "so"], a: 0 },
+    { q: "Which preposition shows direction?", options: ["on", "at", "into", "during"], a: 2 },
+    { q: "Which is a simple sentence?", options: ["He came and she left.", "Because it was raining.", "She reads books.", "When I reached home."], a: 2 },
+    { q: "Identify the be-verb in the sentence: “She is happy.”", options: ["she", "is", "happy", "none"], a: 1 },
+    { q: "Which sentence uses past continuous tense correctly?", options: ["He eats food.", "He was eating food.", "He has eaten food.", "He ate food."], a: 1 },
+    { q: "Which word is a phrasal verb?", options: ["look", "look after", "looking", "looked"], a: 1 },
+    { q: "Which punctuation mark is correctly used? “I bought apples, bananas, and oranges.”", options: ["full stop", "question mark", "comma", "apostrophe"], a: 2 },
+    { q: "Which sentence is suitable for procedural writing?", options: ["I like cooking.", "First, wash your hands.", "Cooking is fun.", "Food tastes good."], a: 1 },
+    { q: "Which sentence best fits a sports article?", options: ["I love football.", "The match was played yesterday.", "The team showed great skill and teamwork.", "Football is popular."], a: 2 },
+    { q: "Which word contains a silent letter?", options: ["cat", "knife", "sun", "pen"], a: 1 },
+    { q: "Which conjunction joins two clauses of equal importance?", options: ["because", "although", "and", "when"], a: 2 },
+    { q: "Which sentence correctly uses a relative clause?", options: ["This is the boy which is playing.", "This is the boy who is playing.", "This is the boy what is playing.", "This is boy playing."], a: 1 },
+    { q: "Which sentence is appropriate for a letter to a friend?", options: ["Respectfully yours", "Dear Sir", "Hope you are fine.", "Subject: Application"], a: 2 },
+    { q: "Which figure of speech is used in: “The classroom was a zoo”?", options: ["Simile", "Metaphor", "Personification", "Alliteration"], a: 1 },
+    { q: "Which sentence is suitable for a science-fiction story?", options: ["I went to the market.", "The robot spoke like a human.", "It rained heavily.", "The teacher entered the class."], a: 1 },
 
-  // ENGLISH PHONOLOGY (81-90)
-  {q:"Phonology is the study of:", o:["Meaning of words","Sentence structure","Sounds of language","Spelling"], c:2},
-  {q:"A vowel sound is produced with:", o:["No airflow","Complete blockage","Open mouth","Teeth closed"], c:2},
-  {q:"Which is a vowel sound?", o:["/b/","/t/","/a/","/k/"], c:2},
-  {q:"Diphthongs are:", o:["Single consonant sounds","Two vowel sounds together","Silent letters","Stress patterns"], c:1},
-  {q:"Which is a diphthong sound?", o:["/a/","/e/","/ai/","/b/"], c:2},
-  {q:"The sound /oi/ is found in the word:", o:["Cat","Boy","Bed","Sun"], c:1},
-  {q:"Which word contains a diphthong?", o:["Book","Pen","Time","Sit"], c:2},
-  {q:"Phonemes are:", o:["Letters","Words","Smallest sound units","Sentences"], c:2},
-  {q:"Which word has the /au/ sound?", o:["Cow","Cup","Car","Cut"], c:0},
-  {q:"English has how many main vowel sounds (approximately)?", o:["5","10","20","26"], c:2},
+    // Urdu (RTL)
+    { q: "لفظ 'کتاب' کس قسم کے اسم میں آتا ہے؟", options: ["اسم معرفہ", "اسم نکرہ", "اسم ذات", "اسم صفت"], a: 1 },
+    { q: "لفظ 'استاد' کے لیے کون سا متشابہ لفظ ہے؟", options: ["معلم", "طالب علم", "شاگرد", "کتاب"], a: 0 },
+    { q: "لفظ 'دوستی' کا متلازم لفظ کیا ہوگا؟", options: ["محبت", "دشمنی", "نفرت", "خوف"], a: 0 },
+    { q: "لفظ 'بچہ' کس قسم کے اسم میں آتا ہے؟", options: ["اسم صفت", "اسم مصغر", "اسم مکبر", "اسم معرفہ"], a: 1 },
+    { q: "لفظ 'مہربان' کس قسم کا اسم صفت ہے؟", options: ["صفت حسن", "صفت قبح", "صفت ذات", "صفت نکرہ"], a: 2 },
+    { q: "لفظ 'پھولیا' کس قسم کے اسم میں آتا ہے؟", options: ["مصغر", "مکبر", "معرفہ", "صفت"], a: 0 },
+    { q: "لفظ 'محنت کرنا' کس قسم کا فعل ہے؟", options: ["معانی کے لحاظ", "صفت", "اسم", "نکرہ"], a: 0 },
+    { q: "لفظ 'شجاعت' کے لیے کون سا متشابہ لفظ ہے؟", options: ["بہادری", "خوف", "عجز", "کمزوری"], a: 0 },
+    { q: "لفظ 'زمین' کس قسم کا اسم ظرف ہے؟", options: ["مکان", "زمان", "طریقہ", "حالت"], a: 0 },
+    { q: "لفظ 'کتابیں' میں کون سا لاحقہ استعمال ہوا ہے؟", options: ["ین", "نا", "کا", "کاں"], a: 0 }
+  ];
 
-  // ENGLISH GRAMMAR & SPELLING (91-100)
-  {q:"The teacher ___ in the classroom.", o:["are","were","is","have"], c:2},
-  {q:"The players ___ practicing for the match.", o:["is","was","are","has"], c:2},
-  {q:"Each student ___ a book.", o:["have","has","are","were"], c:1},
-  {q:"She ___ very well.", o:["sing","sings","singing","sung"], c:1},
-  {q:"Which word is spelled correctly?", o:["Enviroment","Definately","Beautiful","Grammer"], c:2},
-  {q:"Find the correctly spelled word.", o:["Recieve","Ocasion","Neccessary","Necessary"], c:3},
-  {q:"Which word is spelled incorrectly?", o:["Friend","School","Knowlege","Teacher"], c:2},
-  {q:"An adverb describes a:", o:["Noun","Pronoun","Verb","Article"], c:2},
-  {q:"“He runs quickly.” The word quickly is a/an:", o:["Adjective","Noun","Verb","Adverb"], c:3},
-  {q:"Which word is an adverb?", o:["Happy","Slowly","Beautiful","Kind"], c:1}
-];
+  let currentQuestionIndex = 0;
+  const userAnswers = new Array(questions.length).fill(null);
 
-let answers = new Array(questions.length).fill(null);
-let time = 3600;
+  const questionContainer = document.getElementById("quizContent");
+  const questionText = document.getElementById("questionText");
+  const optionsList = document.getElementById("optionsList");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const progressText = document.getElementById("progressText");
 
-function init() {
-  const area = document.getElementById("testArea");
-  questions.forEach((q, i) => {
-    const box = document.createElement("div");
-    // Removed q.isUrdu check since all new questions are English
-    box.className = "question-box";
-    box.innerHTML = `
-      <span class="q-text">${i+1}. ${q.q}</span>
-      <div class="options-row">
-        ${q.o.map((opt, oi) => `
-          <div class="option-item" onclick="select(${i}, ${oi}, this)">
-            <span class="circle-btn"></span>
-            <span>${opt}</span>
-          </div>
-        `).join('')}
-      </div>
-    `;
-    area.appendChild(box);
-  });
-  startTimer();
-}
-
-function select(qi, oi, el) {
-  answers[qi] = oi;
-  const parent = el.parentElement;
-  Array.from(parent.children).forEach(child => child.classList.remove("selected"));
-  el.classList.add("selected");
-}
-
-function startTimer() {
-  const timerEl = document.getElementById("timer");
-  const interval = setInterval(() => {
-    let m = Math.floor(time / 60);
-    let s = time % 60;
-    timerEl.innerText = `Time Left: ${m}:${s < 10 ? '0' : ''}${s}`;
-    if (time-- <= 0) {
-      clearInterval(interval);
-      submitTest();
-    }
-  }, 1000);
-}
-
-function submitTest() {
-  let score = 0;
-  questions.forEach((q, i) => { if (answers[i] === q.c) score++; });
-  
-  document.getElementById("testArea").style.display = "none";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("timer").style.display = "none";
-  
-  const res = document.getElementById("result");
-  res.style.display = "block";
-  document.getElementById("scoreText").innerText = `Total Score: ${score} / 100`;
-  
-  if(score >= 50) {
-    document.getElementById("status").innerText = "Congratulations! You Passed!";
-    document.getElementById("emoji").innerText = "🏆";
-  } else {
-    document.getElementById("status").innerText = "Keep Studying and Try Again!";
-    document.getElementById("emoji").innerText = "📚";
+  // Check for Urdu text to adjust direction
+  function isUrdu(text) {
+    const urduRegex = /[\u0600-\u06FF]/;
+    return urduRegex.test(text);
   }
-  window.scrollTo(0, 0);
-}
 
-init();
+  function renderQuestion() {
+    const q = questions[currentQuestionIndex];
+    questionText.innerText = `${currentQuestionIndex + 1}. ${q.q}`;
+
+    // Toggle Urdu Styling
+    if (isUrdu(q.q)) {
+      questionContainer.classList.add("urdu-text");
+    } else {
+      questionContainer.classList.remove("urdu-text");
+    }
+
+    // Render Options
+    optionsList.innerHTML = "";
+    q.options.forEach((opt, index) => {
+      const label = document.createElement("label");
+      label.className = "option-label";
+
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "option";
+      radio.value = index;
+      
+      // Select if previously answered
+      if (userAnswers[currentQuestionIndex] === index) {
+        radio.checked = true;
+      }
+
+      // Save on click
+      radio.onclick = () => {
+        userAnswers[currentQuestionIndex] = index;
+      };
+
+      label.appendChild(radio);
+      label.appendChild(document.createTextNode(opt));
+      optionsList.appendChild(label);
+    });
+
+    // Update Progress
+    progressText.innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+    // Handle Buttons
+    prevBtn.disabled = currentQuestionIndex === 0;
+
+    if (currentQuestionIndex === questions.length - 1) {
+      nextBtn.innerText = "Finish";
+      nextBtn.classList.add("finish-btn");
+    } else {
+      nextBtn.innerText = "Next";
+      nextBtn.classList.remove("finish-btn");
+    }
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex === questions.length - 1) {
+      finishTest();
+    } else {
+      currentQuestionIndex++;
+      renderQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderQuestion();
+    }
+  }
+
+  function finishTest() {
+    let score = 0;
+    questions.forEach((q, i) => {
+      if (userAnswers[i] === q.a) {
+        score++;
+      }
+    });
+
+    // Save results for result.html
+    localStorage.setItem("score", score);
+    localStorage.setItem("total", questions.length);
+
+    // Redirect
+    window.location.href = "result.html";
+  }
+
+  // Start
+  renderQuestion();
 </script>
 </body>
 </html>

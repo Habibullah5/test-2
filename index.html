@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ETEA Practice Test</title>
+  <title>ETEA Practice Test - Login</title>
   <style>
     body {
       margin: 0;
@@ -26,7 +26,7 @@
     .info { text-align: left; font-size: 14px; background: #f4f6f8; padding: 12px; border-radius: 8px; margin: 15px 0; }
     .info li { margin-bottom: 6px; }
     input {
-      width: 100%; padding: 12px; margin: 8px 0; font-size: 16px;
+      width: 90%; padding: 12px; margin: 8px 0; font-size: 16px;
       border-radius: 6px; border: 1px solid #ccc;
     }
     button {
@@ -47,10 +47,9 @@
     <b>Instructions:</b>
     <ul>
       <li>Total Questions: <b>100</b></li>
-      <li>Options are clickable circles in one row</li>
-      <li>All questions visible at once</li>
-      <li>Final result only</li>
-      <li>Pass mark: 50%</li>
+      <li>One question at a time</li>
+      <li>Use Next/Previous to navigate</li>
+      <li>Click "Finish" to see result</li>
     </ul>
   </div>
   <input id="name" placeholder="Enter Your Name">
@@ -66,11 +65,13 @@ function startTest() {
     alert("Please enter Name and Roll Number");
     return;
   }
+  // Save details to be used in the next files
   localStorage.setItem("studentName", nameInput.value.trim());
   localStorage.setItem("rollNo", rollInput.value.trim());
-  window.location.href="test.html";
+  
+  // Go to the quiz page
+  window.location.href = "test.html";
 }
 </script>
 </body>
 </html>
-
