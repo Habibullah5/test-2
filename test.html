@@ -49,6 +49,8 @@
       flex-direction: column;
       gap: 12px;
     }
+    
+    /* Option Styles */
     .option-label {
       display: flex;
       align-items: center;
@@ -56,11 +58,36 @@
       border: 1px solid #ddd;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      position: relative;
     }
-    .option-label:hover { background-color: #f0f8ff; border-color: #007bff; }
-    .option-label input { margin-right: 15px; transform: scale(1.2); }
-    /* For Urdu layout adjustments */
+    .option-label:hover { 
+      background-color: #f0f8ff; 
+      border-color: #007bff; 
+    }
+    .option-label input { 
+      margin-right: 15px; 
+      transform: scale(1.2); 
+    }
+
+    /* Feedback Styles */
+    .correct {
+      background-color: #d4edda !important;
+      border-color: #28a745 !important;
+      color: #155724;
+    }
+    .wrong {
+      background-color: #f8d7da !important;
+      border-color: #dc3545 !important;
+      color: #721c24;
+    }
+    /* Disable clicking after selection */
+    .disabled {
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    /* Urdu layout adjustments */
     .urdu-text .option-label { flex-direction: row-reverse; }
     .urdu-text .option-label input { margin-right: 0; margin-left: 15px; }
 
@@ -107,12 +134,10 @@
 </div>
 
 <script>
-  // Display Student Name from Login
   const storedName = localStorage.getItem("studentName");
   if(storedName) document.getElementById("studentDisplay").innerText = storedName;
 
   // --- DATABASE OF QUESTIONS ---
-  // Note: 'a' is the index of the correct answer (0=A, 1=B, 2=C, 3=D)
   const questions = [
     // Mathematics
     { q: "Which of the following is a linear expression?", options: ["x² + 4", "3x − 7", "xy + 2", "x³"], a: 1 },
@@ -186,7 +211,7 @@
     { q: "Which of the following is an abstract noun?", options: ["Chair", "Freedom", "Dog", "Pencil"], a: 1 },
     { q: "Which pronoun correctly completes the sentence? “Ali gave the book to ___.”", options: ["he", "his", "him", "himself"], a: 2 },
     { q: "Which sentence is written in first person?", options: ["He went to school", "She is my friend", "I believe in humanity", "They helped others"], a: 2 },
-    { q: "Which prefix changes the meaning of “possible” to its opposite?", options: ["re-", "un-", "pre-", "dis-"], a: 1 }, // Note: Impossible is correct, but 'un' is closest distractor in limited list
+    { q: "Which prefix changes the meaning of “possible” to its opposite?", options: ["re-", "un-", "pre-", "dis-"], a: 1 },
     { q: "Which word is an adjective?", options: ["Quickly", "Happiness", "Beautiful", "Run"], a: 2 },
     { q: "Which sentence is interrogative?", options: ["She is my sister.", "What is your name?", "Please sit down.", "What a nice day!"], a: 1 },
     { q: "Which word is a connective?", options: ["Quickly", "And", "Blue", "Chair"], a: 1 },
@@ -241,6 +266,8 @@
 
   function renderQuestion() {
     const q = questions[currentQuestionIndex];
+    const isAnswered = userAnswers[currentQuestionIndex] !== null;
+    
     questionText.innerText = `${currentQuestionIndex + 1}. ${q.q}`;
 
     // Toggle Urdu Styling
@@ -260,16 +287,29 @@
       radio.type = "radio";
       radio.name = "option";
       radio.value = index;
-      
-      // Select if previously answered
-      if (userAnswers[currentQuestionIndex] === index) {
-        radio.checked = true;
+
+      // Logic to disable or check based on previous answer
+      if (isAnswered) {
+        radio.disabled = true; // Disable radio input
+        label.classList.add("disabled"); // Disable click on label
+        
+        // Restore correct/wrong colors
+        if (index === q.a) {
+          label.classList.add("correct");
+        } else if (index === userAnswers[currentQuestionIndex]) {
+          label.classList.add("wrong");
+        }
+        
+        // Check the radio button they selected
+        if (index === userAnswers[currentQuestionIndex]) {
+          radio.checked = true;
+        }
       }
 
-      // Save on click
-      radio.onclick = () => {
-        userAnswers[currentQuestionIndex] = index;
-      };
+      // Add Click Event (only if not answered yet)
+      if (!isAnswered) {
+        label.onclick = function() { checkAnswer(index, q.a, label); };
+      }
 
       label.appendChild(radio);
       label.appendChild(document.createTextNode(opt));
@@ -288,6 +328,42 @@
     } else {
       nextBtn.innerText = "Next";
       nextBtn.classList.remove("finish-btn");
+    }
+  }
+
+  // New function to handle immediate check
+  function checkAnswer(selectedIndex, correctIndex, clickedLabel) {
+    // Prevent double clicking logic (just in case)
+    if (userAnswers[currentQuestionIndex] !== null) return;
+
+    // Save Answer
+    userAnswers[currentQuestionIndex] = selectedIndex;
+
+    const allLabels = optionsList.getElementsByTagName("label");
+
+    // Loop through all options to apply colors and disable them
+    for (let i = 0; i < allLabels.length; i++) {
+      const lbl = allLabels[i];
+      const radio = lbl.querySelector("input");
+      
+      // Disable interaction
+      lbl.classList.add("disabled");
+      radio.disabled = true;
+
+      // 1. Highlight Correct Answer (Always Green)
+      if (i === correctIndex) {
+        lbl.classList.add("correct");
+      }
+
+      // 2. Highlight Wrong Answer (Red) if user picked it
+      if (i === selectedIndex && selectedIndex !== correctIndex) {
+        lbl.classList.add("wrong");
+      }
+      
+      // Check the radio button visually
+      if (i === selectedIndex) {
+        radio.checked = true;
+      }
     }
   }
 
@@ -315,11 +391,9 @@
       }
     });
 
-    // Save results for result.html
     localStorage.setItem("score", score);
     localStorage.setItem("total", questions.length);
 
-    // Redirect
     window.location.href = "result.html";
   }
 
