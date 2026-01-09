@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETEA 100/100 Practice Test</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f4f7f6; padding:20px; color: #333; }
+    .container { max-width: 1000px; margin: auto; }
+    h2 { text-align:center; color: #2c3e50; }
+    
+    #timer { 
+      font-size:22px; font-weight: bold; color:#fff; text-align:center; 
+      margin-bottom:20px; position: sticky; top: 10px; background: #e74c3c;
+      padding: 10px; border-radius: 8px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .question-box {
+      background:white; padding:15px 25px; margin-bottom:15px;
+      border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.05);
+      border-left: 6px solid #3498db;
+    }
+
+    .q-text { 
+      font-weight: 600; font-size: 17px; margin-bottom: 12px; display: block;
+    }
+
+    .options-row { 
+      display: flex; gap: 15px; flex-wrap: wrap; align-items: center;
+    }
+
+    .option-item {
+      display: flex; align-items: center; cursor: pointer; padding: 8px 12px;
+      border-radius: 20px; border: 1px solid #ddd; background: #fafafa;
+      transition: 0.2s; min-width: 120px;
+    }
+
+    .option-item:hover { background: #ebf5fb; border-color: #3498db; }
+
+    .circle-btn {
+      height: 20px; width: 20px; border: 2px solid #7f8c8d; border-radius: 50%;
+      margin-right: 10px; display: inline-block; position: relative; flex-shrink: 0;
+    }
+
+    .selected { background: #3498db !important; color: white !important; border-color: #2980b9 !important; }
+    .selected .circle-btn { border-color: white; background: white; box-shadow: inset 0 0 0 4px #3498db; }
+
+    #submitBtn {
+      width:100%; padding:20px; font-size:22px; background:#27ae60;
+      color:white; border:none; border-radius:10px; cursor:pointer; font-weight: bold;
+      margin-top: 20px; transition: 0.3s;
+    }
+    #submitBtn:hover { background:#219150; transform: translateY(-2px); }
+
+    #result {
+      display:none; text-align:center; margin-top:30px; padding:40px;
+      border-radius:15px; background:white; box-shadow:0 10px 20px rgba(0,0,0,0.1);
+    }
+    .urdu-text { direction: rtl; text-align: right; font-size: 19px; }
+    .urdu-text .options-row { flex-direction: row; }
+    .urdu-text .circle-btn { margin-right: 0; margin-left: 10px; }
+
+    @media (max-width: 600px) {
+      .options-row { flex-direction: column; align-items: flex-start; }
+      .option-item { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>ETEA Full Preparation Test (100 Questions)</h2>
+  <div id="timer">Time Left: 60:00</div>
+  <div id="testArea"></div>
+  <button id="submitBtn" onclick="submitTest()">Submit Final Test</button>
+
+  <div id="result">
+    <div id="emoji" style="font-size: 60px;"></div>
+    <h2 id="status"></h2>
+    <p id="scoreText" style="font-size: 28px; font-weight: bold;"></p>
+    <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer; border-radius:5px; border:none; background:#3498db; color:white;">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // SCIENCE (1-30)
+  {q:"Matter is anything that has mass and occupies space.", o:["True","False","Only gas","Only solid"], c:0},
+  {q:"The smallest unit of matter that retains its properties is called a:", o:["Cell","Particle","Tissue","Organ"], c:1},
+  {q:"Particles of matter are always in motion.", o:["True","False","Only solids","Never"], c:0},
+  {q:"Which state of matter has particles closely packed?", o:["Gas","Liquid","Solid","Plasma"], c:2},
+  {q:"Particles of gas have:", o:["Very little space","No movement","Large spaces between them","Fixed position"], c:2},
+  {q:"Diffusion happens faster in:", o:["Solids","Liquids","Gases","Metals"], c:2},
+  {q:"Heating a substance causes particles to:", o:["Stop moving","Move faster","Disappear","Shrink"], c:1},
+  {q:"Cooling a substance causes particles to:", o:["Move faster","Move slower","Break","Evaporate"], c:1},
+  {q:"Change of solid into liquid is called:", o:["Freezing","Evaporation","Melting","Condensation"], c:2},
+  {q:"Liquids have:", o:["Fixed shape","Fixed volume only","No volume","No mass"], c:1},
+  {q:"Digestion of food starts in the:", o:["Stomach","Mouth","Small intestine","Large intestine"], c:1},
+  {q:"Teeth help mainly in:", o:["Swallowing","Breathing","Chewing food","Absorption"], c:2},
+  {q:"Saliva helps in digestion of:", o:["Proteins","Fats","Starch","Vitamins"], c:2},
+  {q:"The tube that connects mouth to stomach is called:", o:["Trachea","Intestine","Oesophagus","Rectum"], c:2},
+  {q:"Protein digestion begins in the:", o:["Mouth","Stomach","Small intestine","Large intestine"], c:1},
+  {q:"Gastric juice contains:", o:["Sugar","Acid","Water only","Bile"], c:1},
+  {q:"The liver produces:", o:["Insulin","Saliva","Bile","Acid"], c:2},
+  {q:"Bile helps in digestion of:", o:["Proteins","Starch","Fats","Minerals"], c:2},
+  {q:"Most nutrients are absorbed in the:", o:["Stomach","Large intestine","Small intestine","Rectum"], c:2},
+  {q:"Finger-like projections in the small intestine are called:", o:["Alveoli","Villi","Nephrons","Cells"], c:1},
+  {q:"Villi increase the surface area for:", o:["Digestion","Chewing","Absorption","Breathing"], c:2},
+  {q:"Large intestine mainly absorbs:", o:["Nutrients","Proteins","Water","Oxygen"], c:2},
+  {q:"Movement of food through digestive tract is called:", o:["Respiration","Circulation","Peristalsis","Excretion"], c:2},
+  {q:"Pancreas produces:", o:["Bile","Digestive enzymes","Saliva","Acid"], c:1},
+  {q:"Undigested food is removed through the:", o:["Mouth","Stomach","Anus","Small intestine"], c:2},
+  {q:"Digestive enzymes are mostly:", o:["Fats","Carbohydrates","Proteins","Minerals"], c:2},
+  {q:"Rectum temporarily stores:", o:["Food","Water","Waste","Nutrients"], c:2},
+  {q:"Which organ is NOT part of digestive system?", o:["Liver","Heart","Stomach","Intestine"], c:1},
+  {q:"Proper digestion helps the body to:", o:["Grow and repair","Sleep","Breathe","Think"], c:0},
+  {q:"Digestion means breaking complex food into:", o:["Bigger particles","Simpler substances","Waste","Energy directly"], c:1},
+
+  // MATH (31-60)
+  {q:"A well-defined collection of objects is called a:", o:["Number","Set","Pattern","Variable"], c:1},
+  {q:"Which of the following is a set?", o:["Beautiful flowers","Tall students","Vowels in English alphabet","Good books"], c:2},
+  {q:"The symbol used to show a set is:", o:["( )","[ ]","{ }","< >"], c:2},
+  {q:"The empty set is denoted by:", o:["{0}","{ }","{1}","{a}"], c:1},
+  {q:"A set containing only one element is called:", o:["Empty set","Universal set","Singleton set","Finite set"], c:2},
+  {q:"If A = {1, 2, 3} and 2 ∈ A, it means:", o:["2 is not in A","2 is an element of A","A equals 2","A has two elements"], c:1},
+  {q:"If B = {a, b, c}, which is a subset of B?", o:["{a, d}","{b, c}","{d}","{a, e}"], c:1},
+  {q:"The union of two sets contains:", o:["Common elements only","Elements of first set only","All elements of both sets","No elements"], c:2},
+  {q:"The intersection of two sets contains:", o:["All elements","Different elements","Common elements","No elements"], c:2},
+  {q:"If A = {1, 2} and B = {3, 4}, then A ∩ B =", o:["{1, 2, 3, 4}","{ }","{2, 3}","{1}"], c:1},
+  {q:"A letter used to represent a number is called a:", o:["Constant","Variable","Term","Factor"], c:1},
+  {q:"Which of the following is an algebraic expression?", o:["5 + 3 = 8","x + 5","12 ÷ 4","7"], c:1},
+  {q:"In the expression 3x, the number 3 is called the:", o:["Variable","Constant","Coefficient","Term"], c:2},
+  {q:"The expression 4 + y has how many terms?", o:["One","Two","Three","Four"], c:1},
+  {q:"A constant has:", o:["No value","Changing value","Fixed value","Alphabet only"], c:2},
+  {q:"Like terms have:", o:["Different variables","Same variables and powers","Only numbers","Different signs"], c:1},
+  {q:"Which are like terms?", o:["2x and 3y","5a and 7a","x and x²","3 and x"], c:1},
+  {q:"The value of 2x when x = 3 is:", o:["5","6","9","12"], c:1},
+  {q:"Which is a numerical expression?", o:["x + 4","y − 2","7 × 5","a + b"], c:2},
+  {q:"The expression 5x − 2 has:", o:["One term","Two terms","Three terms","No term"], c:1},
+  {q:"A pattern is a:", o:["Random arrangement","Repeated design or sequence","Single number","Formula only"], c:1},
+  {q:"Which is a number pattern?", o:["Circle, square, circle","Red, blue, red","2, 4, 6, 8","Cat, dog, cat"], c:2},
+  {q:"The rule of the pattern 3, 6, 9, 12 is:", o:["Subtract 3","Add 2","Add 3","Multiply by 3"], c:2},
+  {q:"The next number in the pattern 5, 10, 15, ___ is:", o:["18","20","25","30"], c:1},
+  {q:"The pattern 1, 4, 9, 16 is based on:", o:["Adding 3","Odd numbers","Square numbers","Even numbers"], c:2},
+  {q:"The missing term in the pattern 2, 4, __, 8 is:", o:["5","6","7","10"], c:1},
+  {q:"A repeating pattern is one that:", o:["Stops early","Never changes","Repeats again and again","Has no rule"], c:2},
+  {q:"Which is a shape pattern?", o:["1, 2, 3","a, b, c","△ ○ △ ○","5, 10, 15"], c:2},
+  {q:"Patterns help us to:", o:["Guess randomly","Find rules and predict","Memorize numbers only","Draw pictures"], c:1},
+  {q:"The next term in the pattern 10, 20, 30, ___ is:", o:["35","40","50","60"], c:1},
+
+  // ENGLISH VOCAB & GRAMMAR (61-80)
+  {q:"Words that sound the same but have different meanings are called:", o:["Synonyms","Antonyms","Homophones","Homographs"], c:2},
+  {q:"Which pair is an example of homophones?", o:["Big – Large","See – Sea","Book – Pen","Run – Walk"], c:1},
+  {q:"Which word means a place to sit and also means to rely on?", o:["Fair","Bank","Bat","Bench"], c:1},
+  {q:"Words that have same spelling but different meanings are called:", o:["Homophones","Homographs","Prefixes","Suffixes"], c:1},
+  {q:"Which is a homograph?", o:["Right (correct / direction)","Son – Sun","Write – Right","Blue – Sky"], c:0},
+  {q:"“Can” is a modal verb that shows:", o:["Past","Ability","Time","Place"], c:1},
+  {q:"Which sentence shows permission?", o:["I can swim.","You may go out.","She will come.","He was reading."], c:1},
+  {q:"“Must” shows:", o:["Ability","Possibility","Obligation","Past habit"], c:2},
+  {q:"Which modal verb shows advice?", o:["Can","Must","Should","Will"], c:2},
+  {q:"“He ___ finish his work today.” (strong necessity)", o:["can","may","must","could"], c:2},
+  {q:"“She is writing a letter” is in:", o:["Simple present","Present continuous","Past continuous","Present perfect"], c:1},
+  {q:"“They have completed the task” is:", o:["Past tense","Present perfect tense","Future tense","Past perfect tense"], c:1},
+  {q:"“He was playing cricket” shows:", o:["Habit","Future plan","Past continuous","Present perfect"], c:2},
+  {q:"Which sentence is in simple past tense?", o:["He eats food.","He is eating food.","He ate food.","He has eaten food."], c:2},
+  {q:"“I will go to school tomorrow” is:", o:["Present","Past","Future","Perfect"], c:2},
+  {q:"Which preposition shows place?", o:["At","In","On","All of these"], c:3},
+  {q:"“The book is ___ the table.”", o:["in","at","on","by"], c:2},
+  {q:"“She lives ___ Lahore.”", o:["on","in","at","by"], c:1},
+  {q:"“He arrived ___ 9 o’clock.”", o:["in","on","at","from"], c:2},
+  {q:"Which preposition is used for movement?", o:["Under","Over","Into","On"], c:2},
+
+  // ENGLISH PHONOLOGY (81-90)
+  {q:"Phonology is the study of:", o:["Meaning of words","Sentence structure","Sounds of language","Spelling"], c:2},
+  {q:"A vowel sound is produced with:", o:["No airflow","Complete blockage","Open mouth","Teeth closed"], c:2},
+  {q:"Which is a vowel sound?", o:["/b/","/t/","/a/","/k/"], c:2},
+  {q:"Diphthongs are:", o:["Single consonant sounds","Two vowel sounds together","Silent letters","Stress patterns"], c:1},
+  {q:"Which is a diphthong sound?", o:["/a/","/e/","/ai/","/b/"], c:2},
+  {q:"The sound /oi/ is found in the word:", o:["Cat","Boy","Bed","Sun"], c:1},
+  {q:"Which word contains a diphthong?", o:["Book","Pen","Time","Sit"], c:2},
+  {q:"Phonemes are:", o:["Letters","Words","Smallest sound units","Sentences"], c:2},
+  {q:"Which word has the /au/ sound?", o:["Cow","Cup","Car","Cut"], c:0},
+  {q:"English has how many main vowel sounds (approximately)?", o:["5","10","20","26"], c:2},
+
+  // ENGLISH GRAMMAR & SPELLING (91-100)
+  {q:"The teacher ___ in the classroom.", o:["are","were","is","have"], c:2},
+  {q:"The players ___ practicing for the match.", o:["is","was","are","has"], c:2},
+  {q:"Each student ___ a book.", o:["have","has","are","were"], c:1},
+  {q:"She ___ very well.", o:["sing","sings","singing","sung"], c:1},
+  {q:"Which word is spelled correctly?", o:["Enviroment","Definately","Beautiful","Grammer"], c:2},
+  {q:"Find the correctly spelled word.", o:["Recieve","Ocasion","Neccessary","Necessary"], c:3},
+  {q:"Which word is spelled incorrectly?", o:["Friend","School","Knowlege","Teacher"], c:2},
+  {q:"An adverb describes a:", o:["Noun","Pronoun","Verb","Article"], c:2},
+  {q:"“He runs quickly.” The word quickly is a/an:", o:["Adjective","Noun","Verb","Adverb"], c:3},
+  {q:"Which word is an adverb?", o:["Happy","Slowly","Beautiful","Kind"], c:1}
+];
+
+let answers = new Array(questions.length).fill(null);
+let time = 3600;
+
+function init() {
+  const area = document.getElementById("testArea");
+  questions.forEach((q, i) => {
+    const box = document.createElement("div");
+    // Removed q.isUrdu check since all new questions are English
+    box.className = "question-box";
+    box.innerHTML = `
+      <span class="q-text">${i+1}. ${q.q}</span>
+      <div class="options-row">
+        ${q.o.map((opt, oi) => `
+          <div class="option-item" onclick="select(${i}, ${oi}, this)">
+            <span class="circle-btn"></span>
+            <span>${opt}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    area.appendChild(box);
+  });
+  startTimer();
+}
+
+function select(qi, oi, el) {
+  answers[qi] = oi;
+  const parent = el.parentElement;
+  Array.from(parent.children).forEach(child => child.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+function startTimer() {
+  const timerEl = document.getElementById("timer");
+  const interval = setInterval(() => {
+    let m = Math.floor(time / 60);
+    let s = time % 60;
+    timerEl.innerText = `Time Left: ${m}:${s < 10 ? '0' : ''}${s}`;
+    if (time-- <= 0) {
+      clearInterval(interval);
+      submitTest();
+    }
+  }, 1000);
+}
+
+function submitTest() {
+  let score = 0;
+  questions.forEach((q, i) => { if (answers[i] === q.c) score++; });
+  
+  document.getElementById("testArea").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("timer").style.display = "none";
+  
+  const res = document.getElementById("result");
+  res.style.display = "block";
+  document.getElementById("scoreText").innerText = `Total Score: ${score} / 100`;
+  
+  if(score >= 50) {
+    document.getElementById("status").innerText = "Congratulations! You Passed!";
+    document.getElementById("emoji").innerText = "🏆";
+  } else {
+    document.getElementById("status").innerText = "Keep Studying and Try Again!";
+    document.getElementById("emoji").innerText = "📚";
+  }
+  window.scrollTo(0, 0);
+}
+
+init();
+</script>
+</body>
+</html>
